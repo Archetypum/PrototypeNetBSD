@@ -127,7 +127,7 @@ begin_installation()
 {
     INSTALLATION_PROFILE=$(cat src/etc/profile.conf)
     
-    if [ "$INSTALLATION_PROFILE" -eq "server-openssh" ]; then 
+    if [ "$INSTALLATION_PROFILE" = "server-openssh" ]; then 
         sh src/install_scripts/fetch_pkgin.sh
         sh src/install_scripts/install_main.sh
         sh src/install_scripts/install_openssh.sh
