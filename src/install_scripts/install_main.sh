@@ -4,7 +4,7 @@ install_main()
 {
     if command -v pkgin >/dev/nukk 2>&1; then
         echo "[*] Success! [install_main()]: 'pkgin' found on the system."
-        pkgin install bash git htop neofetch vim
+        pkgin -y install bash git htop neofetch vim
         verify
     else
         echo "[!] Error! [install_main()]; 'pkgin' is not found on the system. Corrupted installation?"

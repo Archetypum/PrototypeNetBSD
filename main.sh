@@ -12,6 +12,16 @@ create_config_file()
 introduction()
 {
     clear
+    echo "-----------------------------------------------------------------------------------"
+    echo "  _____           _        _                    _   _      _   ____   _____ _____  "
+    echo " |  __ \         | |      | |                  | \ | |    | | |  _ \ / ____|  __ \ "
+    echo " | |__) | __ ___ | |_ ___ | |_ _   _ _ __   ___|  \| | ___| |_| |_) | (___ | |  | |"
+    echo " |  ___/ '__/ _ \| __/ _ \| __| | | | '_ \ / _ \ .   |/ _ \ __|  _< \___ \ | |  | |"
+    echo " | |   | | | (_) | || (_) | |_| |_| | |_) |  __/ |\  |  __/ |_| |_) |____) | |__| |"
+    echo " |_|   |_|  \___/ \__\___/ \__|\__, | .__/ \___|_| \_|\___|\__|____/|_____/|_____/ "
+    echo "                                __/ | |                                            "
+    echo "                               |___/|_|                                            "
+    echo "-----------------------------------------------------------------------------------"
 }
 
 get_automatic_or_manual()
@@ -113,10 +123,22 @@ get_installation_profile()
     fi
 }
 
+begin_installation()
+{
+    INSTALLATION_PROFILE=$(cat src/etc/profile.conf)
+    
+    if [ "$INSTALLATION_PROFILE" == "server-openssh" ]; then 
+        sh src/install_scripts/fetch_pkgin.sh
+        sh src/install_scripts/install_main.sh
+        sh src/install_scripts/install_openssh.sh
+    fi
+}
+
 main() {
     introduction
     get_installation_profile
     get_automatic_or_manual
+    begin_installation
 }
 
 main
