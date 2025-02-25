@@ -1,6 +1,8 @@
 # Makefike
 # BSD make required.
 
+SETUP_SCRIPT := main.sh
+
 all: install tests
 
 install:

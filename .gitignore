@@ -1,0 +1,12 @@
+# Vim:
+.vim/
+*.swp
+*.swo
+Session.vim
+
+# Temporary files:
+*~
+\#'
+\#'\#
+.#'
+
