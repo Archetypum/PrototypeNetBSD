@@ -1,4 +1,19 @@
 #!/bin/sh
+#
+# Copyright (C) 2025 Archetypum
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <https://www.gnu.org/licenses/>
 
 AUTOINSTALL_CONF_FILE="src/etc/autoinstall.conf"
 PROFILE_CONF_FILE="src/etc/profile.conf"
@@ -14,9 +29,10 @@ introduction()
     echo " | |   | | | (_) | || (_) | |_| |_| | |_) |  __/ |\  |  __/ |_| |_) |____) | |__| |"
     echo " |_|   |_|  \___/ \__\___/ \__|\__, | .__/ \___|_| \_|\___|\__|____/|_____/|_____/ "
     echo "                                __/ | |                                            "
-    echo "                               |___/|_|                                            "
+    echo "                               |___/|_| $(cat src/etc/prototype_version) for NetBSD $(cat src/etc/last_netbsd_version)"
     echo "-----------------------------------------------------------------------------------"
-    echo "Current version - $(cat src/etc/prototype_version) | Latest NetBSD version - $(cat src/etc/last_netbsd_version)"
+    echo "Made by Archetypum, licensed under GNU GPL v3."
+    echo "Source code available at https://github.com/Archetypum/PrototypeNetBSD"
     echo "-----------------------------------------------------------------------------------"
 }
 
@@ -56,7 +72,7 @@ get_automatic_or_manual()
 
 get_installation_profile()
 {
-    echo "Available installation profiles:"
+    echo "\nAvailable installation profiles:"
     echo " - minimal."
     echo " - x11."
     echo " - desktop."
@@ -144,6 +160,7 @@ begin_installation()
 
     if [ "$INSTALLATION_PROFILE" = "desktop" ]; then
         sh src/install_scripts/fetch_pkgin.sh
+        sh src/install_scripts/fetch_pkgsrc.sh
         sh src/install_scripts/install_main.sh
         sh src/install_scripts/install_x11.sh
         sh src/install_scripts/install_dm.sh
@@ -193,11 +210,30 @@ begin_installation()
     fi
 }
 
-main() {
+finish_installation()
+{
+    clear
+
+    echo "NetBSD related resources:"
+    echo " - Official NetBSD website: https://www.netbsd.org/"
+    echo " - Official pkgsrc website: https://www.pkgsrc.org/"
+    echo " - NetBSD manual pages: https://man.netbsd.org/"
+    echo " - NetBSD mailing lists: https://www.netbsd.org/mailinglists/"
+    echo " - Wikipedia: https://en.wikipedia.org/wiki/NetBSD"
+    echo " - The guide: https://www.netbsd.org/docs/guide/en/"
+    
+    echo "\n[*] The installation is now finished. Press any key to exit installer"
+    read CONTINUE
+    exit 0
+}
+
+main()
+{
     introduction
     get_installation_profile
     get_automatic_or_manual
     begin_installation
+    finish_installation
 }
 
 main
