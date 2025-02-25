@@ -3,12 +3,6 @@
 AUTOINSTALL_CONF_FILE="src/etc/autoinstall.conf"
 PROFILE_CONF_FILE="src/etc/profile.conf"
 
-create_config_file()
-{
-    echo "$1" > "$AUTOINSTALL_CONF_FILE"
-    echo "[*] Success! [create_config_file()]: Created autoinstall configuration file: $AUTHOINSTALL_CONF_FILE with value: $1."
-}
-
 introduction()
 {
     clear
@@ -22,12 +16,15 @@ introduction()
     echo "                                __/ | |                                            "
     echo "                               |___/|_|                                            "
     echo "-----------------------------------------------------------------------------------"
+    echo "Current version - $(cat src/etc/prototype_version) | Latest NetBSD version - $(cat src/etc/last_netbsd_version)"
+    echo "-----------------------------------------------------------------------------------"
 }
 
 get_automatic_or_manual()
 {
+    echo "[?] Enable automatic installation? (y/N)"
     while true; do
-        read -r -p "[?] Enable automatic installation? (y/N): " ANSWER
+        read ANSWER
         case "$ANSWER" in
             [yY]*)
                 AUTOINSTALL_VALUE="true"
@@ -48,12 +45,12 @@ get_automatic_or_manual()
     done
 
     if [ ! -f "$AUTOINSTALL_CONF_FILE" ]; then
-        echo "[!] Warning! [automatic_or_manual()]: Autoinstall configuration file not found. Corrupted installation?"
+        echo "[!] Warning! [get_automatic_or_manual()]: Autoinstall configuration file not found. Corrupted installation?"
         echo "$AUTOINSTALL_VALUE" > "$AUTOINSTALL_CONF_FILE"\
-        echo "[*] Success! [create_config_file()]: Created autoinstall configuration file: $AUTHOINSTALL_CONF_FILE with value: $AUTOINSTALL_VALUE."
+        echo "[*] Success! [get_automatic_or_manual()]: Created autoinstall configuration file: $AUTOINSTALL_CONF_FILE with value: $AUTOINSTALL_VALUE."
     else
         echo "$AUTOINSTALL_VALUE" > "$AUTOINSTALL_CONF_FILE"
-        echo "[*] Success! [automatic_or_manual()]: Log configuration set to: $AUTOINSTALL_VALUE in $AUTOINSTALL_CONF_FILE."
+        echo "[*] Success! [get_automatic_or_manual()]: Log configuration set to: $AUTOINSTALL_VALUE in $AUTOINSTALL_CONF_FILE."
     fi
 }
 
@@ -69,9 +66,10 @@ get_installation_profile()
     echo " - server-dhcp."
     echo " - server-webserver."
     echo " - server-samba."
-
+    
+    echo "[==> Enter desired system profile: "
     while true; do
-        read -r -p "[==>] Enter desired system profile: " ANSWER
+        read ANSWER
         case "$ANSWER" in
             "minimal")
                 INSTALLATION_PROFILE="minimal"
@@ -102,7 +100,7 @@ get_installation_profile()
                 break
                 ;;
             "server-webserver")
-                INSTALLLATION_PROFILE="server-webserver"
+                INSTALLATION_PROFILE="server-webserver"
                 break
                 ;;
             "server-samba")
@@ -122,7 +120,7 @@ get_installation_profile()
     if [ ! -f "$PROFILE_CONF_FILE" ]; then
         echo "[!] Warning! [get_installation_profile()]: Installation profile configuration file not found. Corrupted installation?"
         echo "$INSTALLATION_PROFILE" > "$PROFILE_CONF_FILE"
-        echo "[*] Success! [create_config_file()]: Created autoinstall configuration file: $AUTHOINSTALL_CONF_FILE with value: $INSTALLATION_PROFILE."
+        echo "[*] Success! [create_config_file()]: Created autoinstall configuration file: $AUTOINSTALL_CONF_FILE with value: $INSTALLATION_PROFILE."
     else
         echo "$INSTALLATION_PROFILE" > "$PROFILE_CONF_FILE"
         echo "[*] Success! [get_installation_profile()]: Log configuration set to: $INSTALLATION_PROFILE in $PROFILE_CONF_FILE."

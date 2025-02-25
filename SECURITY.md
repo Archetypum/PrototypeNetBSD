@@ -21,7 +21,7 @@ After vulnerability got fixed we will not:
 
 ## Known Vulnerabilities
 
-Currently we dont have any known vulnerabilities...
+Currently, we don't have any known vulnerabilities...
 
 ## Recommendations on PrototypeNetBSD usage
 
@@ -34,3 +34,4 @@ DO NOT CHANGE anything in the code unless you know what you are doing.
 - _CONTRIBUTING.md_.
 
 - _CODE_OF_CONDUCT.md_.
+

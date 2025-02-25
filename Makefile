@@ -1,4 +1,4 @@
-# Makefike
+# Makefile
 # BSD make required.
 
 SETUP_SCRIPT := main.sh
