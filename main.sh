@@ -72,7 +72,7 @@ get_automatic_or_manual()
 
 get_installation_profile()
 {
-    echo "\nAvailable installation profiles:"
+    echo "Available installation profiles:"
     echo " - minimal."
     echo " - x11."
     echo " - desktop."
@@ -145,6 +145,7 @@ get_installation_profile()
 
 begin_installation()
 {
+    AUTOINSTALL_MODE=$(cat src/etc/autoinstall.conf)
     INSTALLATION_PROFILE=$(cat src/etc/profile.conf)
 
     if [ "$INSTALLATION_PROFILE" = "minimal" ]; then
@@ -222,7 +223,7 @@ finish_installation()
     echo " - Wikipedia: https://en.wikipedia.org/wiki/NetBSD"
     echo " - The guide: https://www.netbsd.org/docs/guide/en/"
     
-    echo "\n[*] The installation is now finished. Press any key to exit installer"
+    echo "[*] The installation is now finished. Press any key to exit installer"
     read CONTINUE
     exit 0
 }

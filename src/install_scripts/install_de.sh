@@ -17,12 +17,48 @@
 
 install_de()
 {
-    echo "debug"
+    echo "[*] Available deskop enviroments"
+    echo "1. xfce (default)."
+    echo "2. lxde."
+    echo "3. lxqt."
+    echo "4. mate."
+    echo "[==>] Enter DE name:"
+    
+    while true; do
+        read DE
+
+        case "$DE" in
+            "xfce")
+                pkgin -y install xfce4 xfce4-extras
+                break
+                ;;
+            "lxde")
+                pkgin -y install lxde
+                break
+                ;;
+            "lxqt")
+                pkgin -y install lxqt
+                break
+                ;;
+            "mate")
+                pkgin -y install mate
+                break
+                ;;
+            "")
+                pkgin -y install xfce4 xfce4-extras
+                break
+                ;;
+            *)
+                echo "[!] Please enter a valid DE."
+                break
+                ;;
+        esac
+    done
 }
 
 verify()
 {
-    echo "debug"
+    
 }
 
 install_de
