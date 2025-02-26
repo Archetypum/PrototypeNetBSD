@@ -15,8 +15,22 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>
 
+NETBSD_WEBSITE="www.netbsd.org"
 AUTOINSTALL_CONF_FILE="etc/autoinstall.conf"
 PROFILE_CONF_FILE="etc/profile.conf"
+
+check_internet_connection()
+{
+    echo "[*] Checking internet connection by pinging $NETBSD_WEBSITE..."
+    ping -c 1 "$NETBSD_WEBSITE" > /dev/null 2>&1
+    if [ $? -eq 0 ]; then
+        echo "[*] [check_internet_connection()] Internet connection is available."
+        return 0
+    else
+        echo "[!] [check_internet_connection()] No internet connection detected. Installation cannot proceed."
+        return 1
+    fi
+}
 
 introduction()
 {
@@ -274,6 +288,10 @@ finish_installation()
 
 main()
 {
+    if ! check_internet_connection; then
+        echo "[!] Installation aborted due to missing internet connection."
+        exit 1
+    fi
     introduction
     get_installation_profile
     get_automatic_or_manual
