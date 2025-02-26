@@ -15,8 +15,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>
 
-AUTOINSTALL_CONF_FILE="src/etc/autoinstall.conf"
-PROFILE_CONF_FILE="src/etc/profile.conf"
+AUTOINSTALL_CONF_FILE="etc/autoinstall.conf"
+PROFILE_CONF_FILE="etc/profile.conf"
 
 introduction()
 {
@@ -29,7 +29,7 @@ introduction()
     echo " | |   | | | (_) | || (_) | |_| |_| | |_) |  __/ |\  |  __/ |_| |_) |____) | |__| |"
     echo " |_|   |_|  \___/ \__\___/ \__|\__, | .__/ \___|_| \_|\___|\__|____/|_____/|_____/ "
     echo "                                __/ | |                                            "
-    echo "                               |___/|_| $(cat src/etc/prototype_version) for NetBSD $(cat src/etc/last_netbsd_version)"
+    echo "                               |___/|_| $(cat etc/prototype_version) for NetBSD $(cat etc/last_netbsd_version)"
     echo "-----------------------------------------------------------------------------------"
     echo "Made by Archetypum, licensed under GNU GPL v3."
     echo "Source code available at https://github.com/Archetypum/PrototypeNetBSD"
@@ -62,7 +62,7 @@ get_automatic_or_manual()
 
     if [ ! -f "$AUTOINSTALL_CONF_FILE" ]; then
         echo "[!] Warning! [get_automatic_or_manual()]: Autoinstall configuration file not found. Corrupted installation?"
-        echo "$AUTOINSTALL_VALUE" > "$AUTOINSTALL_CONF_FILE"\
+        echo "$AUTOINSTALL_VALUE" > "$AUTOINSTALL_CONF_FILE"
         echo "[*] Success! [get_automatic_or_manual()]: Created autoinstall configuration file: $AUTOINSTALL_CONF_FILE with value: $AUTOINSTALL_VALUE."
     else
         echo "$AUTOINSTALL_VALUE" > "$AUTOINSTALL_CONF_FILE"
@@ -82,7 +82,7 @@ get_installation_profile()
     echo " - server-dhcp."
     echo " - server-webserver."
     echo " - server-samba."
-    
+
     echo "[==> Enter desired system profile: "
     while true; do
         read ANSWER
@@ -132,7 +132,7 @@ get_installation_profile()
                 ;;
         esac
     done
-
+    
     if [ ! -f "$PROFILE_CONF_FILE" ]; then
         echo "[!] Warning! [get_installation_profile()]: Installation profile configuration file not found. Corrupted installation?"
         echo "$INSTALLATION_PROFILE" > "$PROFILE_CONF_FILE"
@@ -145,69 +145,113 @@ get_installation_profile()
 
 begin_installation()
 {
-    AUTOINSTALL_MODE=$(cat src/etc/autoinstall.conf)
-    INSTALLATION_PROFILE=$(cat src/etc/profile.conf)
+    AUTOINSTALL_MODE=$(cat etc/autoinstall.conf)
+    INSTALLATION_PROFILE=$(cat etc/profile.conf)
+
+    confirm_script_execution()
+    {
+        if [ "$AUTOINSTALL_MODE" = "false" ]; then
+            echo "[?] Execute $1? (y/N)"
+            while true; do
+                read ANSWER
+                case "$ANSWER" in
+                    [yY]*)
+                        return 0
+                        ;;
+                    [nN]*)
+                        echo "[!] Skipping $1."
+                        return 1
+                        ;;
+                    "")
+                        echo "[!] Skipping $1 (default)."
+                        return 1
+                        ;;
+                    *)
+                        echo "[!] Please answer 'y' or 'n'."
+                        ;;
+                esac
+            done
+        else
+            return 0
+        fi
+    }
+
+    execute_script_with_confirmation()
+    {
+        SCRIPT_PATH="$1"
+        SCRIPT_NAME=$(basename "$SCRIPT_PATH")
+
+        if confirm_script_execution "$SCRIPT_NAME"; then
+            sh "$SCRIPT_PATH"
+        fi
+    }
 
     if [ "$INSTALLATION_PROFILE" = "minimal" ]; then
-        sh src/install_scripts/fetch_pkgin.sh
-        sh src/install_scripts/install_main.sh
+        execute_script_with_confirmation "src/install_scripts/fetch_pkgin.sh"
+        execute_script_with_confirmation "src/install_scripts/install_main.sh"
     fi
 
     if [ "$INSTALLATION_PROFILE" = "x11" ]; then
-        sh src/install_scripts/fetch_pkgin.sh
-        sh src/install_scripts/install_main.sh
-        sh src/install_scripts/install_x11.sh
+        execute_script_with_confirmation "src/install_scripts/fetch_pkgin.sh"
+        execute_script_with_confirmation "src/install_scripts/install_main.sh"
+        execute_script_with_confirmation "src/install_scripts/install_x11.sh"
     fi
 
     if [ "$INSTALLATION_PROFILE" = "desktop" ]; then
-        sh src/install_scripts/fetch_pkgin.sh
-        sh src/install_scripts/fetch_pkgsrc.sh
-        sh src/install_scripts/install_main.sh
-        sh src/install_scripts/install_x11.sh
-        sh src/install_scripts/install_dm.sh
-        sh src/install_scripts/install_de.sh
+        execute_script_with_confirmation "src/install_scripts/fetch_pkgin.sh"
+        execute_script_with_confirmation "src/install_scripts/fetch_pkgsrc.sh"
+        execute_script_with_confirmation "src/install_scripts/install_main.sh"
+        execute_script_with_confirmation "src/install_scripts/install_x11.sh"
+        execute_script_with_confirmation "src/install_scripts/install_dm.sh"
+        execute_script_with_confirmation "src/install_scripts/install_de.sh"
+        execute_script_with_confirmation "src/install_scripts/install_misc.sh"
     fi
 
-    if [ "$INSTALLATION_PROFILE" = "server-openssh" ]; then 
-        sh src/install_scripts/fetch_pkgin.sh
-        sh src/install_scripts/install_main.sh
-        sh src/install_scripts/install_openssh.sh
-        sh src/install_scripts/install_sshield.sh
-        sh src/install_scripts/install_thesuffocater.sh
-        sh src/install_scripts/install_theunixmanager_bash.sh
+    if [ "$INSTALLATION_PROFILE" = "server-openssh" ]; then
+        execute_script_with_confirmation "src/install_scripts/fetch_pkgin.sh"
+        execute_script_with_confirmation "src/install_scripts/install_main.sh"
+        execute_script_with_confirmation "src/install_scripts/install_openssh.sh"
+        execute_script_with_confirmation "src/install_scripts/install_sshield.sh"
+        execute_script_with_confirmation "src/install_scripts/install_thesuffocater.sh"
+        execute_script_with_confirmation "src/install_scripts/install_theunixmanager_bash.sh"
     fi
 
     if [ "$INSTALLATION_PROFILE" = "server-ftp" ]; then
-        sh src/install_scripts/fetch_pkgin.sh
-        sh src/install_scripts/install_main.sh
-        sh src/install_scripts/intsall_ftp.sh
-        sh src/install_scripts/install_openssh.sh
-        sh src/install_scripts/install_sshield.sh
+        execute_script_with_confirmation "src/install_scripts/fetch_pkgin.sh"
+        execute_script_with_confirmation "src/install_scripts/install_main.sh"
+        execute_script_with_confirmation "src/install_scripts/install_ftp.sh"
+        execute_script_with_confirmation "src/install_scripts/install_openssh.sh"
+        execute_script_with_confirmation "src/install_scripts/install_sshield.sh"
     fi
 
     if [ "$INSTALLATION_PROFILE" = "server-vpn" ]; then
-        sh src/install_scripts/fetch_pkgin.sh
-        sh src/install_scripts/install_main.sh
-        sh src/install_scripts/install_openvpn_setup.sh
-        sh src/intsall_scripts/install_wireguard_setup.sh
-        sh src/install_scripts/install_openssh.sh
-        sh src/install_scripts/install_sshield.sh
+        execute_script_with_confirmation "src/install_scripts/fetch_pkgin.sh"
+        execute_script_with_confirmation "src/install_scripts/install_main.sh"
+        execute_script_with_confirmation "src/install_scripts/setup_openvpn.sh"
+        execute_script_with_confirmation "src/install_scripts/setup_wireguard.sh"
+        execute_script_with_confirmation "src/install_scripts/install_openssh.sh"
+        execute_script_with_confirmation "src/install_scripts/install_sshield.sh"
     fi
 
     if [ "$INSTALLATION_PROFILE" = "server-dhcp" ]; then
-        sh src/install_scripts/fetch_pkgin.sh
-        sh src/install_scripts/install_main.sh
-        sh src/install_scripts/setup_dhcp.sh
-        sh src/install_scripts/install_openssh.sh
-        sh src/install_scripts/install_sshield.sh
+        execute_script_with_confirmation "src/install_scripts/fetch_pkgin.sh"
+        execute_script_with_confirmation "src/install_scripts/install_main.sh"
+        execute_script_with_confirmation "src/install_scripts/setup_dhcp.sh"
+        execute_script_with_confirmation "src/install_scripts/install_openssh.sh"
+        execute_script_with_confirmation "src/install_scripts/install_sshield.sh"
     fi
 
     if [ "$INSTALLATION_PROFILE" = "server-webserver" ]; then
-        echo "debug"
+        execute_script_with_confirmation "src/install_scripts/fetch_pkgin.sh"
+        execute_script_with_confirmation "src/install_scripts/install_main.sh"
+        echo "debug" # TODO: Implement webserver installation
     fi
 
     if [ "$INSTALLATION_PROFILE" = "server-samba" ]; then
-        echo "debug"
+        execute_script_with_confirmation "src/install_scripts/fetch_pkgin.sh"
+        execute_script_with_confirmation "src/install_scripts/fetch_pkgsrc.sh"
+        execute_script_with_confirmation "src/install_scripts/install_main.sh"
+        echo "debug" # TODO: Implement samba installation
     fi
 }
 
@@ -222,7 +266,7 @@ finish_installation()
     echo " - NetBSD mailing lists: https://www.netbsd.org/mailinglists/"
     echo " - Wikipedia: https://en.wikipedia.org/wiki/NetBSD"
     echo " - The guide: https://www.netbsd.org/docs/guide/en/"
-    
+
     echo "[*] The installation is now finished. Press any key to exit installer"
     read CONTINUE
     exit 0

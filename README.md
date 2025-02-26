@@ -5,7 +5,7 @@ The main goal of _PrototypeNetBSD_ is to make a tool that automates configuring 
 
 ## Installation of PrototypeNetBSD (as root):
 
-Clone the repository:
+Clone the repository, then move it to your local NetBSD machine:
 
 ```bash
 git clone https://github.com/Archetypum/PrototypeNetBSD
